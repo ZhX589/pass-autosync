@@ -65,6 +65,17 @@ retry() {
     done
 }
 
+# 发送桌面通知
+send_notification() {
+    local title="$1"
+    local message="$2"
+    local urgency="${3:-normal}"
+    
+    if command -v notify-send > /dev/null 2>&1; then
+        notify-send -u "$urgency" -a "pass-autosync" "$title" "$message"
+    fi
+}
+
 # 主同步逻辑
 do_sync() {
     log "开始同步密码仓库..."
@@ -75,9 +86,11 @@ do_sync() {
     # 尝试同步
     if retry pass git sync; then
         log "✅ 同步成功"
+        send_notification "✅ 同步成功" "密码仓库已同步到远程" "low"
         return 0
     else
         log "❌ 同步失败"
+        send_notification "❌ 同步失败" "请检查网络或手动处理冲突" "critical"
         return 1
     fi
 }
