@@ -1,0 +1,15 @@
+[Unit]
+Description=Timer for pass password store auto sync
+Requires=pass-autosync@%i.service
+
+[Timer]
+# 每小时运行一次
+OnCalendar=hourly
+# 启动后延迟2分钟运行（等待网络）
+OnBootSec=2min
+# 随机延迟防止所有用户同时同步
+RandomizedDelaySec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
